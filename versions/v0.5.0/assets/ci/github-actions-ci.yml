@@ -1,0 +1,40 @@
+# CI de Kotlin/Android (schematize-kotlin). Copie para .github/workflows/ci.yml.
+# Piso 27 da engineering: o gate por commit é LOCAL (scripts/check-kotlin.sh); este CI remoto roda
+# só em tag (hml-*/v*) ou sob pedido (workflow_dispatch). VETADO pull_request/push em branch.
+# Config do detekt: assets/lint/detekt.yml (config/detekt/detekt.yml no projeto).
+name: ci
+on:
+  workflow_dispatch:
+  push:
+    tags: ["hml-*", "v*"]
+    paths-ignore: ["**.md", "docs/**"]
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  kotlin:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '21'
+      # valida o JAR do gradle-wrapper contra os checksums oficiais (mesmo SHA do monorepo gradle/actions)
+      - name: Wrapper valido (gradle/actions/wrapper-validation)
+        uses: gradle/actions/wrapper-validation@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+      # ktlint/detekt são plugins Gradle que o projeto precisa declarar; projeto novo sem eles
+      # NÃO quebra: o passo só roda as tarefas que existem (e avisa quando faltam).
+      - name: ktlint + detekt (se configurados)
+        run: |
+          set -euo pipefail
+          tarefas="$(./gradlew tasks --all -q)"
+          for t in ktlintCheck detekt; do
+            if grep -qE "^${t}( |$)" <<<"$tarefas"; then ./gradlew "$t"
+            else echo "::warning::tarefa $t não configurada no Gradle (assets/lint/detekt.yml); adicione o plugin"; fi
+          done
+      - name: testes + lint Android
+        run: ./gradlew check
