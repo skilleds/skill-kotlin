@@ -21,6 +21,7 @@
   A API 37 será a exigência de 2027 — planeje a migração no primeiro semestre.
 - **Kotlin 2.x / compilador K2** é a baseline (K1 é legado); `@Composable`/**Jetpack Compose** é a
   UI padrão do cliente novo, com o plugin de compilador do Compose alinhado à versão do Kotlin.
+- **Verificação de desenvolvedor Android:** conforme a página oficial (https://developer.android.com/developer-verification, consultada em 2026-11-03), a partir de **30/09/2026** a proteção vale para quem instala apps de lojas participantes em **Brasil, Indonésia, Singapura e Tailândia**, em dispositivos certificados com Android 7+; expansão global em **2027**. Registre o app/desenvolvedor antes de distribuir; confirme o estado vigente na página.
 - **`minSdk`** é decisão de produto, escrita: cada versão a menos exclui usuário; cada versão a mais
   custa em API e teste.
 

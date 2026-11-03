@@ -3,6 +3,22 @@
 Todas as mudanças relevantes deste pacote, no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 com versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+
+### Corrigido
+- P0-1: template de CI sem `pull_request`/push em branch; agora `workflow_dispatch` + `push: tags ["hml-*","v*"]`, `concurrency` com `cancel-in-progress`, `paths-ignore`; cabeçalho diz que o gate por commit é local (piso 27).
+- P1-6: gate de manifesto por ELEMENTO (componente com `intent-filter` sem o próprio `android:exported` reprova mesmo que outro tenha); `SharedPreferences`+token só reprova na escrita (`putString`) com segredo a ≤2 linhas. Testes vermelho→verde (14 casos).
+- P1-8: CI usa `gradle/actions/wrapper-validation` (SHA já fixado) no lugar de `./gradlew --version`; ktlint/detekt só rodam se a tarefa existir (projeto novo não quebra).
+- P1-7 (parte mecânica): ressalva de JUnit5 em teste instrumentado em `references/piso.md` §7.
+- P1-1/P1-2: bloco "Herda os pisos 22–29" em SKILL.md e assets/CLAUDE.md.
+- P2: README v0.4.0; contagem de casos em `/kotlin-review`.
+
+### Adicionado
+- P1-9: verificação de desenvolvedor Android em `references/stack-versoes.md` (fonte oficial https://developer.android.com/developer-verification, 2026-11-03: 30/09/2026 BR/ID/SG/TH, global em 2027).
+
+### Pendente `[~]`
+- P1-7 (regras de Compose, Credential Manager/Play Integrity, política de BuildConfig): decisão de conteúdo, não mecânica.
+
 ## [0.4.0] — 2026-10-14
 Description reduzida para o orçamento de listagem do catálogo; sem mudança de piso.
 

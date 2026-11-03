@@ -77,7 +77,7 @@ Mapa de references:
 | Gradle com version catalog e lock, wrapper com checksum, `minSdk`/`targetSdk`, R8 com `keep` testado, `exported`, KMP como decisão de arquitetura, interop Java | `references/plataforma.md` |
 | Versões e ferramental, com data **e a ressalva de que a toolchain não roda na máquina de referência** | `references/stack-versoes.md` |
 
-Assets prontos para copiar: `assets/ci/github-actions-ci.yml` (ktlint, detekt, `./gradlew check`) · `assets/lint/detekt.yml`.
+Assets prontos para copiar: `assets/ci/github-actions-ci.yml` (gatilho dispatch+tag; wrapper-validation; ktlint/detekt só se configurados; `./gradlew check`) · `assets/lint/detekt.yml`.
 
 ## Pisos inegociáveis (vetam o atalho)
 
@@ -101,6 +101,8 @@ Assets prontos para copiar: `assets/ci/github-actions-ci.yml` (ktlint, detekt, `
 10. **Build reprodutível:** version catalog, dependency locking, **wrapper com checksum**,
     `allWarningsAsErrors`, toolchain declarada.
 11. <!-- herdado:engineering/orquestracao:curto -->**Orquestrador não desenvolve; subagent barato executa.** O agent principal só planeja, despacha e revisa; ação onerosa vira micro-tasks para o executor mais barato que resolve: `haiku` (mecânico) / `sonnet` (código; falhou → mesmo subagent corrige, até 2 rodadas) → Codex `gpt-5.6-terra` → Cursor → subagent `opus` (motivo) → `park`; **visual vai direto ao Codex**; **imagem nunca pelo Claude: detectar Codex/Gemini e perguntar ao usuário qual usar (Codex é a sugestão), nunca API de imagem paga**; papéis em `agentes.toml`. No overdev, cada item do checklist vai a um subagent e o principal revisa antes do `- [x]`. **Sem frota ociosa:** idle com pendência volta ao trabalho; dependente de outro agent → mata e enfileira com gatilho; terminou → mata (§9.6). Detalhe: `schematize-engineering` → `references/orquestracao.md` §9.<!-- /herdado -->
+
+Herda os pisos 22–29 da `schematize-engineering` (git como trava de conclusão, deploy só do git, ops é o gate da IA, sem agents inúteis, relatório 30 min/handoff 6 h, CI remoto só antes do hml, microserviço autônomo, build em dev/hml + higiene).
 
 ## Relação com as outras skills
 

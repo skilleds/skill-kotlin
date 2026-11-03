@@ -89,4 +89,4 @@ Convenção: **MUST** = o gate cobra · **VETADO** = piso.
 
 Disciplina da **`schematize-qa`**. Aqui: JUnit5 + `kotlinx-coroutines-test` (`runTest`, `TestScope`
 com relógio virtual — nada de `Thread.sleep` no teste), MockK no que precisa de dublê, Turbine para
-`Flow`. Teste de unidade **sem device**; o resto na pirâmide da `schematize-mobile`.
+`Flow`. **Ressalva:** JUnit5 roda só em teste de unidade (JVM); teste instrumentado (`androidTest`, device/emulador) usa JUnit4 + AndroidX Test, salvo plugin de terceiros (ex.: android-junit5) declarado. Teste de unidade **sem device**; o resto na pirâmide da `schematize-mobile`.

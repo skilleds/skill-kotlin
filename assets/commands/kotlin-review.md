@@ -39,4 +39,4 @@ isso na saída.
 ## 3. Feche
 
 Achado vira correção no mesmo PR ou item de checklist com dono. Mexeu no gate? rode o vermelho:
-`bash scripts/check-kotlin.test.sh` (11 casos).
+`bash scripts/check-kotlin.test.sh` (14 casos).

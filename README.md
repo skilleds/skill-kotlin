@@ -39,7 +39,7 @@ bash /tmp/skill-kotlin/install.sh .
 
 ## Versão
 
-**v0.1.0** — changelog em `CHANGELOG.md`.
+**v0.4.0** — changelog em `CHANGELOG.md`.
 
 ## Regra de ouro
 
