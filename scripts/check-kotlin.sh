@@ -56,9 +56,15 @@ for f in "${arquivos[@]}"; do
     && avisos+=("$nome: \`runCatching\` engole tudo, inclusive \`CancellationException\` — relance-o em corrotina")
   grep -qE '\blateinit var\b' <<< "$codigo" \
     && avisos+=("$nome: \`lateinit\` — só onde o ciclo de vida garante a inicialização; o erro dele não diz mais que um NPE")
-  grep -qE 'SharedPreferences' <<< "$codigo" \
-    && grep -qiE 'token|senha|password|secret' "$f" \
-    && erros+=("$nome: credencial em \`SharedPreferences\` — é XML EM CLARO; use EncryptedSharedPreferences/Keystore")
+  # granular: só a ESCRITA (putString/putStringSet) com token/senha/segredo na mesma linha ou a
+  # ate 2 linhas de distancia — um `token` em outro canto do arquivo nao acusa nem absolve.
+  if grep -qE 'SharedPreferences' <<< "$codigo" && awk '
+      { l[NR]=$0 }
+      END { for (i=1;i<=NR;i++) if (l[i] ~ /\.put(String|StringSet)[ \t]*\(/)
+              for (j=i-2;j<=i+2;j++) if (j>=1 && tolower(l[j]) ~ /token|senha|password|secret/) exit 0
+            exit 1 }' "$f"; then
+    erros+=("$nome: credencial em \`SharedPreferences\` — é XML EM CLARO; use EncryptedSharedPreferences/Keystore")
+  fi
   grep -qE 'addJavascriptInterface' <<< "$codigo" \
     && erros+=("$nome: \`addJavascriptInterface\` — ponte de execução: VETADO com conteúdo remoto")
   grep -qE 'setJavaScriptEnabled\s*\(\s*true' <<< "$codigo" \
@@ -72,10 +78,23 @@ for m in "${manifestos[@]:-}"; do
   nome="${m#"$raiz"/}"
   grep -qE 'android:allowBackup="true"' "$m" \
     && avisos+=("$nome: \`allowBackup=\"true\"\` — copia dado do app para fora; decida, não herde o default")
-  # componente com intent-filter e SEM exported explícito
-  if grep -qE '<intent-filter' "$m" && ! grep -qE 'android:exported=' "$m"; then
-    erros+=("$nome: componente com intent-filter e SEM \`android:exported\` explícito — é obrigatório desde a API 31 e é superfície de ataque")
-  fi
+  # POR ELEMENTO: cada <activity|activity-alias|service|receiver|provider> com <intent-filter> precisa
+  # do PROPRIO android:exported (um exported em outro componente nao absolve este).
+  while IFS= read -r comp; do
+    [ -n "$comp" ] || continue
+    erros+=("$nome: componente \`$comp\` com intent-filter e SEM \`android:exported\` explícito — é obrigatório desde a API 31 e é superfície de ataque")
+  done < <(tr '\n' ' ' < "$m" | awk '
+    { s=$0
+      while (match(s, /<(activity-alias|activity|service|receiver|provider)[ \t>\/]/)) {
+        tag=substr(s, RSTART+1, RLENGTH-2); s=substr(s, RSTART)
+        e=index(s, ">"); abre=substr(s,1,e); resto=substr(s,e+1)
+        corpo=""
+        if (abre !~ /\/>$/) { f=index(resto, "</" tag ">"); corpo=(f>0)?substr(resto,1,f-1):resto }
+        if (corpo ~ /<intent-filter/ && abre !~ /android:exported[ \t]*=/) {
+          nm="?"; if (match(abre, /android:name[ \t]*=[ \t]*"[^"]*"/)) { nm=substr(abre,RSTART,RLENGTH); sub(/^[^"]*"/,"",nm); sub(/"$/,"",nm) }
+          print "<" tag "> " nm }
+        s=substr(s,2)
+      } }')
   grep -qE 'android:usesCleartextTraffic="true"' "$m" \
     && erros+=("$nome: \`usesCleartextTraffic=\"true\"\` — HTTP em claro no app inteiro")
 done

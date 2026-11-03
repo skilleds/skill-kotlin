@@ -97,6 +97,50 @@ caso cleartext 1 "HTTP em claro" "AndroidManifest.xml" <<'FIX'
 </manifest>
 FIX
 
+echo "== granularidade (P1-6) =="
+caso exported-so-em-um 1 "ServicoB" "AndroidManifest.xml" <<'FIX'
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <application android:label="app">
+    <activity android:name=".MainActivity" android:exported="true">
+      <intent-filter><action android:name="android.intent.action.MAIN" /></intent-filter>
+    </activity>
+    <service android:name=".ServicoB">
+      <intent-filter><action android:name="x.Y" /></intent-filter>
+    </service>
+  </application>
+</manifest>
+FIX
+caso exported-em-todos 0 "regras textuais" "AndroidManifest.xml" <<'FIX'
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <application android:label="app">
+    <activity android:name=".MainActivity" android:exported="true">
+      <intent-filter><action android:name="android.intent.action.MAIN" /></intent-filter>
+    </activity>
+    <service android:name=".Interno" />
+    <receiver android:name=".R" android:exported="false"><intent-filter><action android:name="x.Z" /></intent-filter></receiver>
+  </application>
+</manifest>
+FIX
+caso prefs-sem-token-na-escrita 0 "regras textuais" <<'FIX'
+package exemplo
+import android.content.SharedPreferences
+fun tema(prefs: SharedPreferences, t: String) {
+    prefs.edit().putString("tema", t).apply()
+}
+
+
+
+
+
+
+
+
+
+
+// o token vive no Keystore, nao aqui
+fun docs(token: String) = token
+FIX
+
 echo "== teste pode usar !! =="
 caso bang-em-teste 0 "" "RepositorioTest.kt" <<'FIX'
 package exemplo
