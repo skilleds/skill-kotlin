@@ -3,7 +3,7 @@
 Todas as mudanças relevantes deste pacote, no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 com versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
-## [Não lançado]
+## [0.5.0] — 2026-11-03
 
 ### Corrigido
 - P0-1: template de CI sem `pull_request`/push em branch; agora `workflow_dispatch` + `push: tags ["hml-*","v*"]`, `concurrency` com `cancel-in-progress`, `paths-ignore`; cabeçalho diz que o gate por commit é local (piso 27).
